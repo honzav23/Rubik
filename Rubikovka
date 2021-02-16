@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="cs">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="generator" content="PSPad editor, www.pspad.com">
+    <title>Timer</title>
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script> 
+  </head>
+  <style>
+    button {margin-left:46%; width:150px;height:50px;}
+    #scramble {text-align:center;font-size:30px;bottom:30%;}
+    h1  {width:120px;margin-left:46%;margin-top:200px;font-size:40px;text-align:center;}
+   #prumer {font-size:20px;}
+       td {font-size:20px;}
+li {font-size:20px;border:1px solid black;max-width:100px;}
+li:hover {background-color:#d44442;cursor: pointer;}
+    </style>
+  <body onkeyup="casomira(event)" onload="zamichani();clearTimeout(t)" onkeypress="zastaveni()" onclick="vynulovat()" >
+  <button onclick="zamichani();vynulovat()">Zamíchat</button>
+  <p id="scramble"></p>
+  <button onclick="reset()">Resetovat</button>
+ <h1><time>00:00.00</time></h1>
+ <p id="prumer"></p>
+ <ol id="list">
+<p id="demo"></p>
+ </ol>
+ 
+<script type="text/javascript">
+   var notation = ["R", "U", "F", "L", "B", "D", "R\'", "U\'", "F\'", "L\'", "B\'", "D\'", "R2", "U2", "F2", "L2", "B2", "D2"];
+  function zamichani() {
+    var dest = document.getElementById("scramble");
+    dest.innerHTML = "";
+    var last = "";
+    var current = "";
+    var scramble = new Array();
+    for (i = 0; i < 20; i++) {
+        current = notation[Math.floor(Math.random() * (notation.length - 1))];
+        while (last == current || last[0] == current[0]) {
+            current = notation[Math.floor(Math.random() * (notation.length - 1))];
+        }
+        scramble[i] = current;
+        last = current;
+    }
+    for (j = 0; j < scramble.length - 1; j++) {
+        dest.innerHTML = dest.innerHTML + " " + scramble[j];
+    }
+
+}
+
+var h1 = document.getElementsByTagName('h1')[0],
+    
+    miliseconds = 0, seconds = 0, minutes = 0,
+    t;
+
+function add() {
+   miliseconds++;
+    if (miliseconds >= 99) {
+        miliseconds = 0;
+        seconds++;
+        if (seconds >= 60) {
+            seconds = 0;
+            minutes++;
+        }
+    }
+     
+    h1.textContent = (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + "." + (miliseconds > 9 ? miliseconds : "0" + miliseconds);
+
+    timer();
+}
+function timer() {
+  
+    t = setTimeout(add, 10); 
+}
+timer();
+
+function casomira(event) {
+  var x = event.which || event.keyCode;
+  if (x==32 && miliseconds == 0 && seconds == 0 && minutes == 0) {timer()};
+}
+function zastaveni() {
+  var x = event.which || event.keyCode;
+  if (x==32 && (miliseconds != 0 || seconds != 0 || minutes != 0)) {
+    clearTimeout(t);
+    tvorba();
+    Prumer();
+    $('#list').show();
+    setTimeout(vynulovat, 1500);
+  }
+}
+function vynulovat() {
+ h1.textContent = "00:00.00";
+    miliseconds = 0; seconds = 0; minutes = 0;
+ zamichani();
+  }
+function tvorba() {
+ var ol = document.getElementById("list");
+  var li = document.createElement("li");
+  li.title = 'Smazat čas';
+  var cas = document.createTextNode(h1.textContent);
+ 
+  
+  li.appendChild(cas);
+  ol.appendChild(li);
+  
+}
+function Prumer() {
+  
+  var cislo_casu = (miliseconds * 10) + (seconds * 1000) + (minutes * 60000);
+  casy.push(cislo_casu);
+  vypocet();
+    
+  }
+var casy = [];
+function reset() {
+ var seznam = document.getElementById("list");
+  $('#prumer').hide();
+ list.innerHTML = '';
+ 
+}
+$("li").live('click', function(){
+
+  var pozice = Array.from(this.parentNode.children).indexOf(this);
+  casy.splice(pozice-1, 1);
+  if (casy.length == 0) document.getElementById("prumer").innerHTML = "0.00";
+  $(this).remove();
+  vypocet();
+});
+function vypocet() {
+  var soucetCasu = 0;
+  for (i = 0; i < casy.length;i++) {
+    soucetCasu += casy[i];
+    var average = soucetCasu / casy.length;
+    var prumerMinuty = average / 60000;
+    var prumerSekundy = 0
+    var k = parseInt(prumerMinuty);
+    if (prumerMinuty > 1) {var prumerMinuty2 = prumerMinuty * 60; prumerSekundy = (prumerMinuty2 / k) - 60;
+      if (prumerSekundy < 10) {document.getElementById('prumer').innerHTML = parseInt(prumerMinuty) + ":" + "0" + prumerSekundy.toFixed(2);}
+       else {document.getElementById('prumer').innerHTML = parseInt(prumerMinuty) + ":" + prumerSekundy.toFixed(2);}
+    }
+    else {prumerSekundy = average / 1000; document.getElementById('prumer').innerHTML = prumerSekundy.toFixed(2);} 
+  }
+}
+  </script>
+  </body>
+</html>
