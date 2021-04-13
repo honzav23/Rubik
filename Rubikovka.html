@@ -15,10 +15,10 @@
 li {font-size:20px;border:1px solid black;max-width:100px;}
 li:hover {background-color:#d44442;cursor: pointer;}
     </style>
-  <body onkeyup="casomira(event)" onload="zamichani();clearTimeout(t)" onkeypress="zastaveni()" onclick="vynulovat()" >
+  <body onkeyup="casomira(event)" onload="zamichani();clearTimeout(t)" onkeypress="zastaveni(1)" onclick="vynulovat()" >
   <button onclick="zamichani();vynulovat()">Zamíchat</button>
   <p id="scramble"></p>
-  <button onclick="reset()">Resetovat</button>
+  <button onclick="reset(0)">Resetovat</button>
  <h1><time>00:00.00</time></h1>
  <p id="prumer"></p>
  <ol id="list">
@@ -77,12 +77,12 @@ function casomira(event) {
   var x = event.which || event.keyCode;
   if (x==32 && miliseconds == 0 && seconds == 0 && minutes == 0) {timer()};
 }
-function zastaveni() {
+function zastaveni(param) {
   var x = event.which || event.keyCode;
   if (x==32 && (miliseconds != 0 || seconds != 0 || minutes != 0)) {
     clearTimeout(t);
     tvorba();
-    Prumer();
+    Prumer(param);
     $('#list').show();
     setTimeout(vynulovat, 1500);
   }
@@ -103,18 +103,19 @@ function tvorba() {
   ol.appendChild(li);
   
 }
-function Prumer() {
+function Prumer(param) {
   
   var cislo_casu = (miliseconds * 10) + (seconds * 1000) + (minutes * 60000);
   casy.push(cislo_casu);
-  vypocet();
+  vypocet(param);
     
   }
 var casy = [];
-function reset() {
+function reset(param) {
  var seznam = document.getElementById("list");
   $('#prumer').hide();
  list.innerHTML = '';
+ vypocet(param);
  
 }
 $("li").live('click', function(){
@@ -123,15 +124,17 @@ $("li").live('click', function(){
   casy.splice(pozice-1, 1);
   if (casy.length == 0) document.getElementById("prumer").innerHTML = "0.00";
   $(this).remove();
-  vypocet();
+  vypocet(1);
 });
-function vypocet() {
+function vypocet(param) {
   var soucetCasu = 0;
+  var prumerSekundy = 0;
+  if (param == 1) {
+  $('#prumer').show();
   for (i = 0; i < casy.length;i++) {
     soucetCasu += casy[i];
     var average = soucetCasu / casy.length;
     var prumerMinuty = average / 60000;
-    var prumerSekundy = 0
     var k = parseInt(prumerMinuty);
     if (prumerMinuty > 1) {var prumerMinuty2 = prumerMinuty * 60; prumerSekundy = (prumerMinuty2 / k) - 60;
       if (prumerSekundy < 10) {document.getElementById('prumer').innerHTML = parseInt(prumerMinuty) + ":" + "0" + prumerSekundy.toFixed(2);}
@@ -139,6 +142,15 @@ function vypocet() {
     }
     else {prumerSekundy = average / 1000; document.getElementById('prumer').innerHTML = prumerSekundy.toFixed(2);} 
   }
+}
+ else {
+   soucetCasu = 0;
+   var len = casy.length;
+   for (i = 0; i < len; i++) {
+     casy.shift();
+   }
+   prumerSekundy = 0;
+ }
 }
   </script>
   </body>
